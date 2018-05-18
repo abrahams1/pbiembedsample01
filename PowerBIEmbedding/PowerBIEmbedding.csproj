@@ -85,6 +85,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Default.html" />
+    <Content Include="EmbedDashboard.aspx" />
+    <Content Include="EmbedQnA.aspx" />
+    <Content Include="MyReport.aspx" />
+    <Content Include="Report.css" />
+    <Content Include="scripts\powerbi.js" />
+    <Content Include="scripts\powerbi.js.map" />
+    <None Include="Properties\PublishProfiles\pbiembedsample - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -95,9 +103,26 @@
   <ItemGroup>
     <Content Include="EmbedReport.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="scripts\powerbi.min.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmbedDashboard.aspx.cs">
+      <DependentUpon>EmbedDashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EmbedDashboard.aspx.designer.cs">
+      <DependentUpon>EmbedDashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EmbedQnA.aspx.cs">
+      <DependentUpon>EmbedQnA.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EmbedQnA.aspx.designer.cs">
+      <DependentUpon>EmbedQnA.aspx</DependentUpon>
+    </Compile>
     <Compile Include="EmbedReport.aspx.cs">
       <DependentUpon>EmbedReport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -107,6 +132,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="MyReport.aspx.cs">
+      <DependentUpon>MyReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyReport.aspx.designer.cs">
+      <DependentUpon>MyReport.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

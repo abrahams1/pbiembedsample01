@@ -12,13 +12,13 @@ using Microsoft.PowerBI.Api.V2.Models;
 
 namespace PowerBIEmbedding
 {
-    public partial class EmbedReport : System.Web.UI.Page
+    public partial class MyReport : System.Web.UI.Page
     {
         private static readonly string AuthorityUrl = ConfigurationManager.AppSettings["authorityUrl"];
 
         private static readonly string ResourceUrl = ConfigurationManager.AppSettings["resourceUrl"];
         private static readonly string ApiUrl = ConfigurationManager.AppSettings["apiUrl"];
-        private static readonly string AppWorkspaceId = ConfigurationManager.AppSettings["appWorkspaceId"];
+        private static readonly string AppWorkspaceId = ConfigurationManager.AppSettings["appUserWorkspaceId"];
         private static readonly string ApplicationId = ConfigurationManager.AppSettings["applicationId"];
 
         private static readonly string Username = ConfigurationManager.AppSettings["pbiUsername"];
@@ -27,8 +27,6 @@ namespace PowerBIEmbedding
         public string embedToken;
         public string embedUrl;
         public string reportId;
-
-
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -40,23 +38,9 @@ namespace PowerBIEmbedding
 
             var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken, "Bearer");
 
-            if (!IsPostBack)
+            /*if (!IsPostBack)
             {
-                using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
-                {
-                    // Get a list of reports
-                    var reports = client.Reports.GetReportsInGroup(AppWorkspaceId);
-
-                    // Populate dropdown list
-                    foreach (Report item in reports.Value)
-                    {
-                        ddlReport.Items.Add(new ListItem(item.Name, item.Id));
-                    }
-
-                    // Select first item
-                    ddlReport.SelectedIndex = 0;
-                }
-            }
+            }*/
 
             using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
             {
@@ -64,13 +48,7 @@ namespace PowerBIEmbedding
                 var report = client.Reports.GetReportInGroup(AppWorkspaceId, ddlReport.SelectedValue);
 
                 // Generate an embed token to view
-                var generateTokenRequestParameters =
-                    new GenerateTokenRequest("view", identities: new List<EffectiveIdentity> {
-                    new EffectiveIdentity(
-                            username: ddlManager.SelectedValue.Replace(' ', '~'),
-                            roles: new List<string> { "Manager" },
-                            datasets: new List<string> { report.DatasetId })
-                    });
+                var generateTokenRequestParameters = new GenerateTokenRequest(accessLevel: "view");
                 var tokenResponse = client.Reports.GenerateTokenInGroup(AppWorkspaceId, report.Id, generateTokenRequestParameters);
 
                 // Populate embed variables (to be passed client-side)
@@ -78,11 +56,4 @@ namespace PowerBIEmbedding
                 embedUrl = report.EmbedUrl;
                 reportId = report.Id;
             }
-            ddlButton.Click += new EventHandler(this.MyReports_Click);
         }
-        protected void MyReports_Click(Object sender, EventArgs e)
-        {
-
-        }
-    }
-}

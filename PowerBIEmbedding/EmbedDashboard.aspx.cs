@@ -12,7 +12,7 @@ using Microsoft.PowerBI.Api.V2.Models;
 
 namespace PowerBIEmbedding
 {
-    public partial class EmbedReport : System.Web.UI.Page
+    public partial class EmbedDashboard : System.Web.UI.Page
     {
         private static readonly string AuthorityUrl = ConfigurationManager.AppSettings["authorityUrl"];
 
@@ -26,7 +26,7 @@ namespace PowerBIEmbedding
 
         public string embedToken;
         public string embedUrl;
-        public string reportId;
+        public string dashboardId;
 
 
 
@@ -44,44 +44,34 @@ namespace PowerBIEmbedding
             {
                 using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
                 {
-                    // Get a list of reports
-                    var reports = client.Reports.GetReportsInGroup(AppWorkspaceId);
+                    // Get a list of dashboards
+                    var dashboards = client.Dashboards.GetDashboardsInGroup(AppWorkspaceId);
 
                     // Populate dropdown list
-                    foreach (Report item in reports.Value)
+                    foreach (Dashboard item in dashboards.Value)
                     {
-                        ddlReport.Items.Add(new ListItem(item.Name, item.Id));
+                        ddlDashboard.Items.Add(new ListItem(item.DisplayName, item.Id));
                     }
 
                     // Select first item
-                    ddlReport.SelectedIndex = 0;
+                    ddlDashboard.SelectedIndex = 0;
                 }
             }
 
             using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
             {
-                // Retrieve the selected report
-                var report = client.Reports.GetReportInGroup(AppWorkspaceId, ddlReport.SelectedValue);
+                // Retrieve the selected dashboard
+                var dashboard = client.Dashboards.GetDashboardInGroup(AppWorkspaceId, ddlDashboard.SelectedValue);
 
                 // Generate an embed token to view
-                var generateTokenRequestParameters =
-                    new GenerateTokenRequest("view", identities: new List<EffectiveIdentity> {
-                    new EffectiveIdentity(
-                            username: ddlManager.SelectedValue.Replace(' ', '~'),
-                            roles: new List<string> { "Manager" },
-                            datasets: new List<string> { report.DatasetId })
-                    });
-                var tokenResponse = client.Reports.GenerateTokenInGroup(AppWorkspaceId, report.Id, generateTokenRequestParameters);
+                var generateTokenRequestParameters = new GenerateTokenRequest(accessLevel: "view");
+                var tokenResponse = client.Dashboards.GenerateTokenInGroup(AppWorkspaceId, dashboard.Id, generateTokenRequestParameters);
 
                 // Populate embed variables (to be passed client-side)
                 embedToken = tokenResponse.Token;
-                embedUrl = report.EmbedUrl;
-                reportId = report.Id;
+                embedUrl = dashboard.EmbedUrl;
+                dashboardId = dashboard.Id;
             }
-            ddlButton.Click += new EventHandler(this.MyReports_Click);
-        }
-        protected void MyReports_Click(Object sender, EventArgs e)
-        {
 
         }
     }

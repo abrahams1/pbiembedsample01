@@ -10,7 +10,7 @@
 namespace PowerBIEmbedding {
     
     
-    public partial class EmbedReport {
+    public partial class EmbedQnA {
         
         /// <summary>
         /// form1 control.
@@ -22,30 +22,12 @@ namespace PowerBIEmbedding {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// ddlReport control.
+        /// ddlDataset control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlReport;
-        
-        /// <summary>
-        /// ddlManager control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlManager;
-        
-        /// <summary>
-        /// ddlButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ddlButton;
+        protected global::System.Web.UI.WebControls.DropDownList ddlDataset;
     }
 }
