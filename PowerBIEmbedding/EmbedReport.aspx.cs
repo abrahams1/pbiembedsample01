@@ -82,7 +82,10 @@ namespace PowerBIEmbedding
         }
         protected void MyReports_Click(Object sender, EventArgs e)
         {
-
+            if (ddlManager.SelectedValue != null)
+            {
+                Server.Transfer("~/MyReport.aspx");
+            }
         }
     }
 }

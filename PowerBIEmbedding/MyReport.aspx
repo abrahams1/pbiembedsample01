@@ -7,18 +7,19 @@
     <title></title>
 </head>
 <body>
+    <link href="Report.css" rel="stylesheet" type="text/css" />
     <script src="/scripts/powerbi.js"></script>
     <form id="form1" runat="server">
         <table class="imagetable">
         <tr>
 	        <th>
-                
+                <span> Manager Name: <% =this.mgrName %></span>
 	        </th>
             <th>
-               <asp:Button id="backButton" Text="<- Standard Reports" OnClick="Back_Click" runat="server"/>
+               <asp:Button id="backButton" Text="<- Standard Reports" OnClick="StandardReport_Click" runat="server"/>
             </th>
             <th>
-                <asp:Button id="saveButton" Text="Save My Reports" OnClick="SaveMyReports_Click" runat="server"/>
+                ** If you build a report and need to view it later use File -> Save **
             </th>
         </tr>
         </table>
@@ -47,15 +48,18 @@
 		        tokenType: models.TokenType.Embed,
 		        accessToken: embedToken,
 		        embedUrl: embedUrl,
-		        id: reportId,
+                id: reportId,
+                permissions: models.Permissions.All, /*gives permissions*/
+                viewMode: models.ViewMode.Edit,
 		        settings: {
 			        filterPaneEnabled: true,
-			        navContentPaneEnabled: true
+                    navContentPaneEnabled: true
 		        }
 	        };
 
-	        // Embed the report within the div element
-	        var report = powerbi.embed(embedDiv, config);
+            // Embed the report within the div element
+            var report = powerbi.embed(embedDiv, config);
+           
         </script>
     </form>
 </body>

@@ -20,6 +20,8 @@ namespace PowerBIEmbedding
         private static readonly string ApiUrl = ConfigurationManager.AppSettings["apiUrl"];
         private static readonly string AppWorkspaceId = ConfigurationManager.AppSettings["appUserWorkspaceId"];
         private static readonly string ApplicationId = ConfigurationManager.AppSettings["applicationId"];
+        private static readonly string UserReportTemplateId = ConfigurationManager.AppSettings["UserReportTemplateId"];
+        private static readonly string UserDatasetTemplateId = ConfigurationManager.AppSettings["UserDatasetTemplateId"];
 
         private static readonly string Username = ConfigurationManager.AppSettings["pbiUsername"];
         private static readonly string Password = ConfigurationManager.AppSettings["pbiPassword"];
@@ -27,6 +29,8 @@ namespace PowerBIEmbedding
         public string embedToken;
         public string embedUrl;
         public string reportId;
+        public string mgrName;
+        public bool UserHasExistingReportInWorkspace;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -38,22 +42,78 @@ namespace PowerBIEmbedding
 
             var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken, "Bearer");
 
-            /*if (!IsPostBack)
+            if (this.Page.PreviousPage != null)
             {
-            }*/
+                DropDownList mgrDropList = (DropDownList)this.Page.PreviousPage.FindControl("ddlManager");
+                mgrName = mgrDropList.SelectedValue;
+                reportId = UserReportTemplateId;
 
-            using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
+            }
+
+            if (!IsPostBack)
             {
-                // Retrieve the selected report
-                var report = client.Reports.GetReportInGroup(AppWorkspaceId, ddlReport.SelectedValue);
+                var reportName = "US_Sales_User_Adhoc_" + mgrName.Replace(" ", "_");
 
-                // Generate an embed token to view
-                var generateTokenRequestParameters = new GenerateTokenRequest(accessLevel: "view");
-                var tokenResponse = client.Reports.GenerateTokenInGroup(AppWorkspaceId, report.Id, generateTokenRequestParameters);
 
-                // Populate embed variables (to be passed client-side)
-                embedToken = tokenResponse.Token;
-                embedUrl = report.EmbedUrl;
-                reportId = report.Id;
+                using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
+                {
+                    // Get a list of reports
+                    var reports = client.Reports.GetReportsInGroup(AppWorkspaceId);
+
+                    // Populate dropdown list
+                    foreach (Report item in reports.Value)
+                    {
+                        if (item.Name == reportName)
+                        {
+                            UserHasExistingReportInWorkspace = true;
+                            reportId = item.Id;
+                        }
+
+                    }
+                }
+
+
+                using (var client = new PowerBIClient(new Uri(ApiUrl), tokenCredentials))
+                {
+                    var report = client.Reports.GetReportInGroup(AppWorkspaceId, reportId); ;
+
+                    if (!UserHasExistingReportInWorkspace)
+                    {
+                        var cloneReportRequest = new CloneReportRequest(reportName, AppWorkspaceId, UserDatasetTemplateId);
+                        report = client.Reports.CloneReport(AppWorkspaceId, UserReportTemplateId, cloneReportRequest);
+                    }
+
+                    //var report = client.Reports.CloneReportInGroup(AppWorkspaceId, UserReportTemplateId, cloneReportRequest);
+
+
+                    // Generate an embed token to view
+                    // Generate an embed token to view
+                    var generateTokenRequestParameters =
+                        new GenerateTokenRequest("edit", identities: new List<EffectiveIdentity> {
+                    new EffectiveIdentity(
+                            username: mgrName.Replace(' ', '~'),
+                            roles: new List<string> { "Manager" },
+                            datasets: new List<string> { report.DatasetId })
+                        });
+                    var tokenResponse = client.Reports.GenerateTokenInGroup(AppWorkspaceId, report.Id, generateTokenRequestParameters);
+
+                    // Populate embed variables (to be passed client-side)
+                    embedToken = tokenResponse.Token;
+                    embedUrl = report.EmbedUrl;
+                    reportId = report.Id;
+
+                }
             }
         }
+        protected void StandardReport_Click(Object sender, EventArgs e)
+        {
+          Server.Transfer("~/EmbedReport.aspx");
+          
+        }
+
+        protected void SaveMyreports_Click(Object sender, EventArgs e)
+        {
+        }
+
+    }
+}
