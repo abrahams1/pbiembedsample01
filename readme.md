@@ -12,7 +12,7 @@ https://docs.microsoft.com/en-us/power-bi/developer/embed-sample-for-customers
 
 3. Create a file private file to store credentials information as below and reference it from web.config for the below app setting. In Azure you can add them as app settings so you only need the private file for local testing.
 ```
-<!--do not store credentials in cleartext outside for testing -->
+<!--do not store credentials in cleartext outside of testing -->
 <appSettings>
 	<add key="authorityUrl" value="https://login.windows.net/common/oauth2/authorize/" />
 	<add key="resourceUrl" value="https://analysis.windows.net/powerbi/api" />
