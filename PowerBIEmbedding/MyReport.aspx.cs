@@ -111,9 +111,6 @@ namespace PowerBIEmbedding
           
         }
 
-        protected void SaveMyreports_Click(Object sender, EventArgs e)
-        {
-        }
-
+       
     }
 }
